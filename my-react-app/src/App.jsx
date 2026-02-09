@@ -3,6 +3,7 @@ import './App.css'
 import DogImage from './DogImage'
 import FbiPerson from "./FbiPerson"
 import GuessInput from "./GuessInput"
+import { extractRewardAmount } from './extractReward'
 
 function extractReward(text) {
   const match = text.match(/\$([\d,]+)/)
@@ -58,7 +59,7 @@ function App() {
       return
     }
 
-    const reward = extractReward(person.reward_text)
+    const reward = extractRewardAmount(person.reward_text)
 
     if (Number(guess) < reward) setResult("Too low")
     else if (Number(guess) > reward) setResult("Too high")
