@@ -16,6 +16,7 @@ function App() {
   const [dogUrl, setDogUrl] = useState("")
   const [guess, setGuess] = useState("")
   const [result, setResult] = useState("")
+  const [showReward, setShowReward] = useState(false);
 
   const loadNewData = async () => {
   try {
@@ -70,6 +71,7 @@ function App() {
   } catch (err) {
     console.error(err);
   }
+  setShowReward(false);
 };
 
 
@@ -90,6 +92,7 @@ function App() {
     if (Number(guess) < reward) setResult("Too low")
     else if (Number(guess) > reward) setResult("Too high")
     else setResult("Correct!")
+    setShowReward(true);
   }
 
   return (
@@ -97,7 +100,7 @@ function App() {
       <h1>FBI MOST WANTED</h1>
       <h2>Guess the wanted sum</h2>
 
-      <FbiPerson person={person} />
+      <FbiPerson person={person} showReward={showReward} />
       <DogImage url={dogUrl} />
 
       <GuessInput
