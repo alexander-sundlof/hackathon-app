@@ -22,9 +22,10 @@ export default function FbiPerson() {
 
   return (
     <div style={{ marginTop: "20px" }}>
-      <h2>FBI Wanted Person</h2>
-      <h3>{person.title}</h3>
+      <h2>{person.title}</h2>
       <p>{reward ? `$${reward.toLocaleString()}` : "No reward listed"}</p>
+      <p><strong>Reward:</strong> {person.reward_text || "None listed"}</p>
     </div>
-  );
+  )
 }
+
