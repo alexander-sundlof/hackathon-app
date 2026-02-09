@@ -18,34 +18,60 @@ function App() {
   const [result, setResult] = useState("")
 
   const loadNewData = async () => {
-  // Step 1: fetch first page to get total count
-  const firstResponse = await fetch("https://api.fbi.gov/wanted/v1/list?page=1&pageSize=20");
-  const firstData = await firstResponse.json();
+  try {
+    // Step 1: fetch first page to get total count
+    const firstResponse = await fetch(
+      "https://api.fbi.gov/wanted/v1/list?page=1&pageSize=20"
+    );
+    const firstData = await firstResponse.json();
+    const totalPages = Math.ceil(firstData.total / 20);
 
-  const totalPages = Math.ceil(firstData.total / 20);
+    let randomPerson = null;
+    let attempts = 0;
+    const maxAttempts = 20; // safety to prevent infinite loops
 
-  // Step 2: pick a random page
-  const randomPage = Math.floor(Math.random() * totalPages) + 1;
+    // Step 2: loop until we find a person with reward_text
+    while (!randomPerson && attempts < maxAttempts) {
+      attempts++;
 
-  // Step 3: fetch that random page
-  const randomResponse = await fetch(
-    `https://api.fbi.gov/wanted/v1/list?page=${randomPage}&pageSize=20`
-  );
-  const randomData = await randomResponse.json();
+      // Pick a random page
+      const randomPage = Math.floor(Math.random() * totalPages) + 1;
 
-  // Pick a random person from that page
-  const randomIndex = Math.floor(Math.random() * randomData.items.length);
-  const randomPerson = randomData.items[randomIndex];
+      // Fetch that page
+      const randomResponse = await fetch(
+        `https://api.fbi.gov/wanted/v1/list?page=${randomPage}&pageSize=20`
+      );
+      const randomData = await randomResponse.json();
 
-  setPerson(randomPerson);
+      // Pick a random person from the page
+      const randomIndex = Math.floor(Math.random() * randomData.items.length);
+      const candidate = randomData.items[randomIndex];
 
-  // New dog
-  setDogUrl(`https://place.dog/300/200?${Date.now()}`);
+      // Check if they have reward_text
+      if (candidate.reward_text && candidate.reward_text.trim() !== "") {
+        randomPerson = candidate;
+      }
+    }
 
-  // Reset game state
-  setGuess("");
-  setResult("");
+    if (!randomPerson) {
+      console.warn("No person with a reward_text found after multiple attempts.");
+      return;
+    }
+
+    // Step 3: set state
+    setPerson(randomPerson);
+
+    // Step 4: new dog image
+    setDogUrl(`https://place.dog/300/200?${Date.now()}`);
+
+    // Step 5: reset game state
+    setGuess("");
+    setResult("");
+  } catch (err) {
+    console.error(err);
+  }
 };
+
 
 
   // Load on first page load
