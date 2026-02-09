@@ -16,7 +16,9 @@ function App() {
   const [dogUrl, setDogUrl] = useState("")
   const [guess, setGuess] = useState("")
   const [result, setResult] = useState("")
-  const [showReward, setShowReward] = useState(false);
+  const [showReward, setShowReward] = useState(true)
+  const [showRealReward, setShowRealReward] = useState(false)
+  const [counter, setCounter] = useState(1)
 
   const loadNewData = async () => {
   try {
@@ -71,7 +73,10 @@ function App() {
   } catch (err) {
     console.error(err);
   }
-  setShowReward(false);
+  setCounter(1);
+
+  setShowReward(true);
+  setShowRealReward(false);
 };
 
 
@@ -82,25 +87,36 @@ function App() {
   }, [])
 
   const checkGuess = () => {
-    if (!person?.reward_text) {
-      setResult("This person has no listed reward.")
-      return
-    }
-
-    const reward = extractRewardAmount(person.reward_text)
-
-    if (Number(guess) < reward) setResult("Too low")
-    else if (Number(guess) > reward) setResult("Too high")
-    else setResult("Correct!")
-    setShowReward(true);
+  if (!person?.reward_text) {
+    setResult("This person has no listed reward.");
+    return;
   }
+
+  const reward = extractRewardAmount(person.reward_text);
+
+  if (Number(guess) < reward) setResult("Too low");
+  else if (Number(guess) > reward) setResult("Too high");
+  else setResult("Correct!");
+
+  
+
+  // increment counter
+  const newCount = counter + 1;
+  setCounter(newCount);
+
+  if (newCount === 4) {
+    setShowReward(false);
+    setShowRealReward(true);
+  }
+};
+
 
   return (
     <>
       <h1>FBI MOST WANTED</h1>
       <h2>Guess the wanted sum</h2>
 
-      <FbiPerson person={person} showReward={showReward} />
+      <FbiPerson person={person} showReward={showReward} showRealReward={showRealReward} />
       <DogImage url={dogUrl} />
 
       <GuessInput
